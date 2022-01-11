@@ -1,2 +1,3 @@
-const b = require('./src/b')
-module.exports = b
+const b = require('./src/b');
+
+module.exports = b;

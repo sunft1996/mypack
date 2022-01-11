@@ -12,5 +12,10 @@
     "@babel/generator": "^7.16.0",
     "@babel/parser": "^7.16.6",
     "@babel/traverse": "^7.16.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4"
   }
 }

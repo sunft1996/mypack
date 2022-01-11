@@ -1,8 +1,8 @@
 function jsLoader(source) {
-    source+= ';'
-    return source
+  source += ';';
+  return source;
 }
 
 module.exports = {
-    jsLoader
-}
+  jsLoader,
+};

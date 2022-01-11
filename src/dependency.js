@@ -1,9 +1,9 @@
 class Dependency {
-    constructor(options) {
-        this.rawRequest = options.rawRequest
-        this.context = options.context
-        this.resource = options.resource
-    }
+  constructor(options) {
+    this.rawRequest = options.rawRequest;
+    this.context = options.context;
+    this.resource = options.resource;
+  }
 }
 
-module.exports = Dependency
+module.exports = Dependency;

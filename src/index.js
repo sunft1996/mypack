@@ -1,4 +1,4 @@
-const Compiler = require('./compiler')
+const Compiler = require('./compiler');
 
-const compiler = new Compiler()
-compiler.run()
+const compiler = new Compiler();
+compiler.run();
