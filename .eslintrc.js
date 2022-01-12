@@ -15,5 +15,6 @@ module.exports = {
     'no-underscore-dangle': 0,
     'no-empty': 0,
     'no-restricted-syntax': 0,
+    'class-methods-use-this': 0,
   },
 };

@@ -7,11 +7,12 @@ class Module {
   constructor(dep) {
     this.resource = dep.resource;
     this.rawRequest = dep.rawRequest;
-    this.source = undefined;
+    this.source = {};
     this.context = dep.context;
     this.id = undefined;
     this.dependencies = new Set();
     this._ast = undefined;
+    this.parser = undefined;
   }
 
   build(config) {
@@ -22,8 +23,10 @@ class Module {
         const { loaders } = item;
         const source = fs.readFileSync(this.resource);
         const sourceString = source.toString();
-        this.id = this.resource.replace(process.cwd(), '');
-        this.source = runLoaders(sourceString, loaders);
+        this.id = path.relative(process.cwd(), this.resource);
+        this.source._source = runLoaders(sourceString, loaders);
+        this.parser = new Parser();
+        // todo 生成对应的replaceMent，最后seal的时候替换
         this.getDependencies();
       }
     }
@@ -31,9 +34,10 @@ class Module {
 
   // 依赖收集
   getDependencies() {
-    const parser = new Parser();
-    this._ast = parser.parse(this.source);
-    this.dependencies = parser.getDependencies(this._ast, this.context);
+    this._ast = this.parser.parse(this.source._source);
+    const { dependencies, replacements } = this.parser.getDependencies(this._ast, this.context);
+    this.dependencies = dependencies;
+    this.source.replacements = replacements;
     console.log('[mypack info]: get dependencies', this.dependencies);
   }
 }

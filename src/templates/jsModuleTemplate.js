@@ -1,3 +1,5 @@
+const path = require('path');
+
 class JsModuleTemplate {
   constructor(modules, config) {
     this.modules = modules;
@@ -24,11 +26,16 @@ class JsModuleTemplate {
           })()`;
     let __webpack_modules__string = '';
     this.modules.forEach((m) => {
+      const { _source } = m.source;
+      let source = _source;
+      m.source.replacements.forEach((r) => {
+        source = _source.substring(0, r.start) + r.content + _source.substring(r.end);
+      });
       __webpack_modules__string += `"${m.id}":(module) => {
-                eval(\`${m.source}\`)
+                eval(\`${source}\`)
             },\n`;
     });
-    const __entry_modules__string = this.config.entry;
+    const __entry_modules__string = path.relative(process.cwd(), this.config.entry);
     let asset;
     asset = template.replace('[import___webpack___modules___here]', __webpack_modules__string);
     asset = asset.replace('[entry___webpack___modules___here]', __entry_modules__string);

@@ -1,7 +1,7 @@
 const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
-const Path = require('path');
 const fs = require('fs');
+const pathModule = require('path');
 const Dependency = require('./dependency');
 const { isFileExist } = require('./utils/util');
 
@@ -13,53 +13,84 @@ class Parser {
 
   getDependencies(ast, context) {
     const dependencies = new Set();
+    const replacements = new Set();
 
+    const results = this._getDependencies(ast, context);
+    results.forEach((i) => {
+      const dep = {
+        rawRequest: i.rawRequest,
+        resource: i.resource,
+        context: i.context,
+      };
+      const replacement = {
+        content: i.content,
+        start: i.start,
+        end: i.end,
+      };
+      const dependency = new Dependency(dep);
+      dependencies.add(dependency);
+      replacements.add(replacement);
+    });
+
+    return {
+      dependencies,
+      replacements,
+    };
+  }
+
+  _getDependencies(ast, context) {
+    const results = [];
     traverse(ast, {
       enter(path) {
         if (path.isIdentifier({ name: 'require' })) {
           const { parent } = path;
-          const rawRequest = parent.arguments[0].value;
+          const requestValueNode = parent.arguments[0];
+          const rawRequest = requestValueNode.value;
           let resource;
-          let options;
+          let result;
           if (/\.js$/.test(rawRequest)) {
-            resource = Path.resolve(context, rawRequest);
+            resource = pathModule.resolve(context, rawRequest);
             isFileExist(resource, () => {
-              const context = Path.dirname(resource);
-              options = {
+              result = {
                 rawRequest,
                 resource,
-                context,
+                context: pathModule.dirname(resource),
+                content: `"${pathModule.relative(process.cwd(), resource)}"`,
+                start: requestValueNode.start,
+                end: requestValueNode.end,
               };
             });
           } else {
-            resource = Path.resolve(context, `${rawRequest}.js`);
+            resource = pathModule.resolve(context, `${rawRequest}.js`);
             const findIndex = () => {
-              const absolutePath = Path.resolve(context, rawRequest, './index.js');
+              const absolutePath = pathModule.resolve(context, rawRequest, './index.js');
               isFileExist(absolutePath, () => {
-                const context = Path.dirname(resource);
-                options = {
+                result = {
                   rawRequest,
                   resource: absolutePath,
-                  context,
+                  context: pathModule.dirname(absolutePath),
+                  content: `"${pathModule.relative(process.cwd(), absolutePath)}"`,
+                  start: requestValueNode.start,
+                  end: requestValueNode.end,
                 };
               });
             };
             isFileExist(resource, () => {
-              const context = Path.dirname(resource);
-              options = {
+              result = {
                 rawRequest,
                 resource,
-                context,
+                context: pathModule.dirname(resource),
+                content: `"${pathModule.relative(process.cwd(), resource)}"`,
+                start: requestValueNode.start,
+                end: requestValueNode.end,
               };
             }, findIndex);
           }
-
-          const dependency = new Dependency(options);
-          dependencies.add(dependency);
+          results.push(result);
         }
       },
     });
-    return dependencies;
+    return results;
   }
 }
 
