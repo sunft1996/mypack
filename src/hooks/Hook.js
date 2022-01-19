@@ -1,5 +1,6 @@
 class Hook {
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.tasks = [];
     this.callback = undefined;
   }

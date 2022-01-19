@@ -15,9 +15,9 @@ class Compiler {
     this.asset = undefined;
     this.context = process.cwd();
     this.hooks = {
-      beforeRun: new SyncHook(),
-      beforeCompiler: new SyncHook(),
-      renderManifest: new SyncHook(),
+      beforeRun: new SyncHook('beforeRun'),
+      beforeCompiler: new SyncHook('beforeCompiler'),
+      renderManifest: new SyncHook('renderManifest'),
     };
   }
 
