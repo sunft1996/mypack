@@ -24,44 +24,64 @@ class AsyncParallelHook extends Hook {
     });
   }
 
+  /**
+   * @param {array} args 最后一个参数为回调函数，在所有绑定的方法执行完成后执行
+   */
   callAsync(...args) {
-    this.callback = args.pop();
-    const params = args;
-
-    this._callAsync(...params);
+    this._callAsync(...args);
   }
 
   _callAsync(...args) {
+    let times = 0;
+    const finalCallback = args.pop();
+    const callback = (val) => {
+      // 立即执行 finalCallback
+      if (val) {
+        times = this.tasks.length - 1;
+      }
+      if (times < this.tasks.length - 1) {
+        times++;
+      } else {
+        finalCallback();
+      }
+    };
     this.tasks.forEach((task) => {
-      task.execute(...args);
+      task.execute(...args, callback);
     });
   }
 }
 
 const a = new AsyncParallelHook();
 console.time('cost');
-a.tap('plugin1', () => {
-  console.log(1);
+
+a.tapAsync('plugin1', (name, callback) => {
+  setTimeout(() => {
+    console.log(1);
+    callback();
+  }, 3000);
 });
-a.tapAsync('plugin2', () => {
+a.tapAsync('plugin2', (name, callback) => {
   setTimeout(() => {
     console.log(2);
-    console.timeEnd('cost');
-  }, 200);
+    callback(1);
+  }, 2000);
 });
-a.tapAsync('plugin3', () => {
+a.tapAsync('plugin3', (name, callback) => {
   setTimeout(() => {
+    callback();
     console.log(3);
-  }, 100);
+  }, 1000);
 });
-a.tapPromise(
-  'plugin4',
-  () => new Promise((resolve) => {
-    resolve();
-  }).then(() => {
-    console.log(4);
-  }),
-);
-a.callAsync();
+// a.tapPromise(
+//   'plugin4',
+//   () => new Promise((resolve) => {
+//     resolve();
+//   }).then(() => {
+//     console.log(4);
+//   }),
+// );
+a.callAsync('xiaoming', () => {
+  console.timeEnd('cost');
+});
 
 module.exports = AsyncParallelHook;
