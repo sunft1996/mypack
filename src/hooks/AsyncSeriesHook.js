@@ -32,6 +32,13 @@ class AsyncSeriesHook extends Hook {
   }
 
   _callAsync(...args) {
+    const callback = (val) => {
+      if (val) {
+        this.callback();
+        return;
+      }
+      this._callAsync(...args);
+    };
     const task = this.tasks.shift();
     if (!task) {
       this.callback();
@@ -43,7 +50,7 @@ class AsyncSeriesHook extends Hook {
         this._callAsync(...args);
         break;
       case 'async':
-        task.execute(...args, this._callAsync);
+        task.execute(...args, callback);
         break;
       case 'promise':
         task.execute(...args)
@@ -67,30 +74,30 @@ const a = new AsyncSeriesHook();
 a.tapAsync('plugin1', (name, callback) => {
   setTimeout(() => {
     console.log(1);
-    callback.call(a, name);
+    callback(1);
   }, 1000);
 });
 a.tapAsync('plugin2', (name, callback) => {
   setTimeout(() => {
     console.log(2);
-    callback.call(a, name);
+    callback();
   }, 500);
 });
-a.tapPromise('plugin3', (name) => new Promise((resolve, reject) => {
-  if (name === 'sunfutao') {
-    console.log(3);
-    resolve();
-  } else {
-    reject();
-  }
-}));
-a.tapPromise('plugin4', (name) => new Promise((resolve, reject) => {
-  if (name === 'sunfutao') {
-    console.log(4);
-    resolve();
-  } else {
-    const error = new Error('name not right');
-    reject(error);
-  }
-}));
+// a.tapPromise('plugin3', (name) => new Promise((resolve, reject) => {
+//   if (name === 'sunfutao') {
+//     console.log(3);
+//     resolve();
+//   } else {
+//     reject();
+//   }
+// }));
+// a.tapPromise('plugin4', (name) => new Promise((resolve, reject) => {
+//   if (name === 'sunfutao') {
+//     console.log(4);
+//     resolve();
+//   } else {
+//     const error = new Error('name not right');
+//     reject(error);
+//   }
+// }));
 a.callAsync('sunfutao', () => { console.log('end'); });
