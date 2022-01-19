@@ -29,7 +29,6 @@ class AsyncParallelHook extends Hook {
     const params = args;
 
     this._callAsync(...params);
-    this.callback();
   }
 
   _callAsync(...args) {
@@ -63,8 +62,6 @@ a.tapPromise(
     console.log(4);
   }),
 );
-a.callAsync(() => {
-  console.log('end');
-});
+a.callAsync();
 
 module.exports = AsyncParallelHook;

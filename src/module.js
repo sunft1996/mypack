@@ -38,7 +38,7 @@ class Module {
     const { dependencies, replacements } = this.parser.getDependencies(this._ast, this.context);
     this.dependencies = dependencies;
     this.source.replacements = replacements;
-    console.log('[mypack info]: get dependencies', this.dependencies);
+    // console.log('[mypack info]: get dependencies', this.dependencies);
   }
 }
 

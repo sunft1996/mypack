@@ -2,8 +2,8 @@ const path = require('path');
 const process = require('process');
 const fs = require('fs');
 const Factory = require('./factory');
-const JsModuleTemplate = require('./templates/jsModuleTemplate');
 const Dependency = require('./dependency');
+const SyncHook = require('./hooks/SyncHook');
 
 class Compiler {
   constructor() {
@@ -14,9 +14,15 @@ class Compiler {
     this.modules = new Set();
     this.asset = undefined;
     this.context = process.cwd();
+    this.hooks = {
+      beforeRun: new SyncHook(),
+      beforeCompiler: new SyncHook(),
+      renderManifest: new SyncHook(),
+    };
   }
 
   run() {
+    this.hooks.beforeRun.call(this);
     try {
       // todo: valid config
       this.config = require(path.join(process.cwd(), './mypack.config.js'));
@@ -29,6 +35,7 @@ class Compiler {
   }
 
   compile() {
+    this.hooks.beforeCompiler.call(this);
     const entryResource = path.resolve(this.context, this.config.entry);
     const entry = new Dependency({
       rawRequest: this.config.entry,
@@ -37,12 +44,8 @@ class Compiler {
     });
     this.entry = entry;
     this.buildModule(this.entry);
-    // 填入模版
-    console.log(this.modules);
-    const jsModuleTemplate = new JsModuleTemplate(this.modules, this.config);
-    const asset = jsModuleTemplate.render();
-    this.asset = asset;
-    fs.writeFileSync(path.resolve(process.cwd(), this.config.output, 'output.js'), asset);
+    this.hooks.renderManifest.call(this);
+    fs.writeFileSync(path.resolve(process.cwd(), this.config.output, 'output.js'), this.asset);
   }
 
   buildModule(dependency) {

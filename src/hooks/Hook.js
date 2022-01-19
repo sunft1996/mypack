@@ -15,9 +15,10 @@ class Hook {
 
   call(...args) {
     this.callback = args.pop();
-    const task = this.tasks.pop();
-    task.execute(...args);
-    this.callback(...args);
+    while (this.tasks.length > 0) {
+      const task = this.tasks.shift();
+      task.execute(...args);
+    }
   }
 }
 
