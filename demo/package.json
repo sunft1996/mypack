@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "mypack"
   },
-  "author": ""
+  "author": "",
+  "dependencies": {
+    "@dt/mypack": "0.0.2"
+  }
 }

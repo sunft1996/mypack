@@ -1,3 +1,4 @@
 node_modules/
 public/
 .vscode/
+demo/node_modules
