@@ -19,7 +19,7 @@ class Cli {
     };
     const buildAction = () => {
       console.log('[mypack info]: MyPack is starting...');
-      require('../src/index');
+      require('../lib/index');
     };
     this.makeCommand(buildCommand, {}, buildAction);
     this.program.parse(process.argv);
