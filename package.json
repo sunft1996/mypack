@@ -2,7 +2,7 @@
   "name": "mypack",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "debugger": "node src/hooks/AsyncSeriesHook.js"
@@ -10,6 +10,7 @@
   "bin": {
     "mypack": "bin/cli.js"
   },
+  "files": ["lib", "bin", "demo"],
   "author": "sunft1996",
   "license": "ISC",
   "dependencies": {
