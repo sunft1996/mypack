@@ -1,22 +1,26 @@
 {
-  "name": "mypack",
-  "version": "0.0.1",
+  "name": "@dt/mypack",
+  "version": "0.0.2",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "debugger": "node src/hooks/AsyncSeriesHook.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "mypack": "bin/cli.js"
   },
-  "files": ["lib", "bin", "demo"],
+  "files": [
+    "lib",
+    "bin",
+    "demo"
+  ],
   "author": "sunft1996",
   "license": "ISC",
   "dependencies": {
     "@babel/generator": "^7.16.0",
     "@babel/parser": "^7.16.6",
     "@babel/traverse": "^7.16.3",
+    "@dt/mypack": "0.0.1",
     "chalk": "^5.0.0",
     "commander": "^8.3.0",
     "progress": "^2.0.3"

@@ -1,7 +1,7 @@
-const { jsLoader } = require('./src/loaders/jsLoader');
+const { jsLoader } = require('./loaders/jsLoader');
 
 module.exports = {
-  entry: './demo/index.js',
+  entry: './index.js',
   output: './public',
   rules: [{
     test: /\.js/,
